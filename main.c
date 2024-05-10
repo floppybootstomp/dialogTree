@@ -48,18 +48,28 @@ struct dialogTree{
     char dialog[MAX_DIALOG_SIZE];
 
     struct dialogTree* parent;
-    struct dialogTree* responses[NUM_RESPONSES];
+    char* responses[NUM_RESPONSES];
+  struct dialogTree* nextDialog[NUM_RESPONSES];
 };
 
 // add a new node to the dialog tree
-void dialogTree_NewNode(struct dialogTree* t, char* d, int responseNum){
+void dialogTree_NewNode(struct dialogTree* t, char* d, char** r, size_t responseNum){
     struct dialogTree* child = INIT_DIALOGTREE();
 
+    // add dialog and parent node
     strcpy(child->dialog, d);
     child->parent = t;
 
+    // add responses
+    int i = 0;
+    while(r[i] != NULL){
+        child->responses[i] = r[i];
+        i ++;
+    }
+
+    // add next dialog for after responses
     if(responseNum >= 0 && responseNum < NUM_RESPONSES)
-	t->responses[responseNum] = child;
+	t->nextDialog[responseNum] = child;
 }
 
 // prints the dialog of the specified node in the dialog tree
@@ -68,7 +78,7 @@ void dialogTree_PrintDialog(struct dialogTree* t){
 
     for(int i = 0; i < NUM_RESPONSES; i ++)
 	if(t->responses[i] != NULL)
-	    printf("%d. %s\n", i, t->responses[i]->dialog);
+	    printf("%d. %s\n", i, t->responses[i]);
 }
 
 int main(int argc, char *argv[]){
